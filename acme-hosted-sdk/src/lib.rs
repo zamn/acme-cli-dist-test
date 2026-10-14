@@ -1,18 +1,18 @@
-//! # Acme Dist Test API SDK
+//! # Acme UAT API SDK
 //!
-//! The official Rust SDK for the Acme Dist Test API.
+//! The official Rust SDK for the Acme UAT API.
 //!
 //! ## Getting Started
 //!
 //! ```rust
-//! use acme_dist_sdk::prelude::*;
+//! use acme_hosted_sdk::prelude::*;
 //!
 //! #[tokio::main]
 //! async fn main() {
 //!     let config = ClientConfig {
 //!         ..Default::default()
 //!     };
-//!     let client = AcmeDistClient::new(config).expect("Failed to build client");
+//!     let client = AcmeHostedClient::new(config).expect("Failed to build client");
 //!     client.widgets.list_widgets(None).await;
 //! }
 //! ```

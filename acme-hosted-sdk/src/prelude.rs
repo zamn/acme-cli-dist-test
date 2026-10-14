@@ -1,2 +1,2 @@
-pub use acme_dist_types::*;
+pub use acme_hosted_types::*;
 pub use std::collections::{HashMap, HashSet};

@@ -1,13 +1,13 @@
 ---
-name: acme-dist-custom-commands
-description: How to author custom commands for the acme-dist CLI using the co-generated SDK.
+name: acme-hosted-custom-commands
+description: How to author custom commands for the acme-hosted CLI using the co-generated SDK.
 ---
 
-# Custom Commands for `acme-dist`
+# Custom Commands for `acme-hosted`
 
 ## Overview
 
-The `acme-dist` CLI supports user-authored custom commands that are
+The `acme-hosted` CLI supports user-authored custom commands that are
 compiled into the binary alongside the auto-generated API commands.
 Custom commands get a fully-wired SDK client that inherits the CLI's
 auth, retries, TLS, base URL, and global headers — zero configuration required.
@@ -15,27 +15,27 @@ auth, retries, TLS, base URL, and global headers — zero configuration required
 ## Architecture
 
 ```
-cli/acme-dist/custom.rs    ← Your command handlers (protected by .fernignore)
-cli/acme-dist/sdk.rs       ← Generated bridge: client() + block_on()
-cli/acme-dist/main.rs      ← Generated entrypoint (calls custom::register)
-acme-dist-sdk/             ← Co-generated typed SDK crate
-acme-dist-types/           ← Co-generated typed model crate
+cli/acme-hosted/custom.rs    ← Your command handlers (protected by .fernignore)
+cli/acme-hosted/sdk.rs       ← Generated bridge: client() + block_on()
+cli/acme-hosted/main.rs      ← Generated entrypoint (calls custom::register)
+acme-hosted-sdk/             ← Co-generated typed SDK crate
+acme-hosted-types/           ← Co-generated typed model crate
 ```
 
 ## Adding a Custom Command
 
-### 1. Edit `cli/acme-dist/custom.rs`
+### 1. Edit `cli/acme-hosted/custom.rs`
 
 This file is protected by `.fernignore` — `fern generate` will never
 overwrite it. Register commands in the `register()` function:
 
 ```rust
-use acme_dist_sdk::api::*;
+use acme_hosted_sdk::api::*;
 
 pub fn register(app: CliApp) -> CliApp {
     let app = app.command(
         clap::Command::new("list-widgets")
-            .about("List widgets")
+            .about("Run widgets list-widgets")
         ,
         |matches, ctx| {
             let client = super::sdk::client(ctx);
@@ -51,28 +51,31 @@ pub fn register(app: CliApp) -> CliApp {
 ```
 
 Then build and test:
+
 ```bash
 cargo build
-acme-dist list-widgets
+acme-hosted list-widgets
 ```
 
 ### 2. Available SDK Clients
 
-The `super::sdk::client(ctx)` call returns a `acme_dist_sdk::api::Client`
+The `super::sdk::client(ctx)` call returns a `acme_hosted_sdk::api::Client`
 with the following sub-clients:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `client.widgets` | `acme_dist_sdk::api::WidgetsClient` | widgets operations |
+| Field            | Type                                  | Description        |
+| ---------------- | ------------------------------------- | ------------------ |
+| `client.widgets` | `acme_hosted_sdk::api::WidgetsClient` | widgets operations |
 
 ### 3. Key Patterns
 
 **Get the SDK client** (execution-sharing, fully authenticated):
+
 ```rust
 let client = super::sdk::client(ctx);
 ```
 
 **Run an async SDK call from a sync handler:**
+
 ```rust
 let result = super::sdk::block_on(
     client.some_resource.some_method(args),
@@ -80,19 +83,20 @@ let result = super::sdk::block_on(
 ```
 
 **Use typed models for request/response serialization:**
+
 ```rust
-use acme_dist_sdk::api::*;
+use acme_hosted_sdk::api::*;
 ```
 
 ## Regeneration Safety
 
-| File | Regenerated? | Notes |
-|------|-------------|-------|
-| `cli/acme-dist/custom.rs` | **No** | Protected by `.fernignore` |
-| `cli/acme-dist/sdk.rs` | Yes | Bridges AppContext → SDK client |
-| `cli/acme-dist/main.rs` | Yes | Calls `custom::register(app)` |
-| `acme-dist-sdk/` | Yes | Co-generated typed SDK crate |
-| `acme-dist-types/` | Yes | Co-generated typed models |
+| File                        | Regenerated? | Notes                           |
+| --------------------------- | ------------ | ------------------------------- |
+| `cli/acme-hosted/custom.rs` | **No**       | Protected by `.fernignore`      |
+| `cli/acme-hosted/sdk.rs`    | Yes          | Bridges AppContext → SDK client |
+| `cli/acme-hosted/main.rs`   | Yes          | Calls `custom::register(app)`   |
+| `acme-hosted-sdk/`          | Yes          | Co-generated typed SDK crate    |
+| `acme-hosted-types/`        | Yes          | Co-generated typed models       |
 
 After running `fern generate`, your `custom.rs` is preserved. All
 generated code (SDK, types, glue, main.rs) is updated to match the
@@ -106,8 +110,8 @@ sub-clients), update your `custom.rs` to match.
 cargo build
 
 # Run your custom command
-acme-dist <your-command> [args]
+acme-hosted <your-command> [args]
 
 # Run with verbose output for debugging
-RUST_LOG=debug acme-dist <your-command> [args]
+RUST_LOG=debug acme-hosted <your-command> [args]
 ```
