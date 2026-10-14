@@ -6,6 +6,8 @@ use super::*;
 pub struct ListGadgetsResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
 }
 
 impl ListGadgetsResponse {
@@ -18,6 +20,7 @@ impl ListGadgetsResponse {
 #[non_exhaustive]
 pub struct ListGadgetsResponseBuilder {
     name: Option<String>,
+    description: Option<String>,
 }
 
 impl ListGadgetsResponseBuilder {
@@ -26,10 +29,16 @@ impl ListGadgetsResponseBuilder {
         self
     }
 
+    pub fn description(mut self, value: impl Into<String>) -> Self {
+        self.description = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`ListGadgetsResponse`].
     pub fn build(self) -> Result<ListGadgetsResponse, BuildError> {
         Ok(ListGadgetsResponse {
             name: self.name,
+            description: self.description,
         })
     }
 }
