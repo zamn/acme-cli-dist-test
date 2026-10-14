@@ -7,7 +7,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  RUSTFLAGS: "-A warnings"
+  RUSTFLAGS: '-A warnings'
 
 jobs:
   check:
@@ -45,4 +45,3 @@ jobs:
 
       - name: Test
         run: cargo test
-

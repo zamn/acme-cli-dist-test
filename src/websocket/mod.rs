@@ -43,7 +43,6 @@ mod auth;
 mod client;
 mod error;
 
-pub(crate) use auth::prefix_source;
 pub use auth::WsAuth;
 pub use client::{AutoResponder, ResponderAction, WebSocketClient, WsConfig};
 pub use error::map_handshake_error;
