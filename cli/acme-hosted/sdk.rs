@@ -18,7 +18,7 @@ use fern_cli_sdk::sdk_executor::{CliExecutor, SdkError, SdkRequestExecutor};
 
 struct CliExecutorAdapter(Arc<CliExecutor>);
 
-impl acme_dist_sdk::RequestExecutor for CliExecutorAdapter {
+impl acme_hosted_sdk::RequestExecutor for CliExecutorAdapter {
     fn execute(
         &self,
         request: reqwest::Request,
@@ -45,24 +45,24 @@ impl acme_dist_sdk::RequestExecutor for CliExecutorAdapter {
 ///
 /// The returned client routes all HTTP through the CLI's executor, so
 /// it inherits auth, retries, TLS, and global headers automatically.
-pub fn client(ctx: &AppContext) -> acme_dist_sdk::api::ApiClient {
+pub fn client(ctx: &AppContext) -> acme_hosted_sdk::api::ApiClient {
     let executor = ctx.build_sdk_executor();
     let adapter = Arc::new(CliExecutorAdapter(executor));
     // Seed the base URL from the CLI's own resolution (--base-url / env >
     // spec base_url > server root). `ClientConfig::default()` carries an
     // empty `base_url` for any API that declares no environment, which made
     // every custom command fail on a relative URL before the executor ran.
-    let config = acme_dist_sdk::ClientConfig {
+    let config = acme_hosted_sdk::ClientConfig {
         base_url: ctx.effective_base_url(),
         ..Default::default()
     };
-    let http_client = acme_dist_sdk::HttpClient::with_executor(
-        adapter as Arc<dyn acme_dist_sdk::RequestExecutor>,
+    let http_client = acme_hosted_sdk::HttpClient::with_executor(
+        adapter as Arc<dyn acme_hosted_sdk::RequestExecutor>,
         config.clone(),
     );
-    acme_dist_sdk::api::ApiClient {
+    acme_hosted_sdk::api::ApiClient {
         config,
-        widgets: acme_dist_sdk::api::WidgetsClient { http_client: http_client.clone() },
+        widgets: acme_hosted_sdk::api::WidgetsClient { http_client: http_client.clone() },
     }
 }
 
@@ -76,7 +76,7 @@ pub fn client(ctx: &AppContext) -> acme_dist_sdk::api::ApiClient {
 /// naturally in handler bodies.
 pub fn block_on<F, T>(future: F) -> Result<T, CliError>
 where
-    F: Future<Output = Result<T, acme_dist_sdk::ApiError>>,
+    F: Future<Output = Result<T, acme_hosted_sdk::ApiError>>,
 {
     tokio::task::block_in_place(|| {
         let handle = tokio::runtime::Handle::current();
@@ -84,15 +84,15 @@ where
     })
 }
 
-fn convert_api_error(e: acme_dist_sdk::ApiError) -> CliError {
+fn convert_api_error(e: acme_hosted_sdk::ApiError) -> CliError {
     match e {
-        acme_dist_sdk::ApiError::Http { status, message } => {
+        acme_hosted_sdk::ApiError::Http { status, message } => {
             fern_cli_sdk::error::api_error_from_body(status, &message)
         }
-        acme_dist_sdk::ApiError::Network(err) => {
+        acme_hosted_sdk::ApiError::Network(err) => {
             CliError::Other(anyhow::anyhow!("SDK network error: {err}"))
         }
-        acme_dist_sdk::ApiError::Executor(boxed) => match boxed.downcast::<SdkError>() {
+        acme_hosted_sdk::ApiError::Executor(boxed) => match boxed.downcast::<SdkError>() {
             Ok(sdk_error) => sdk_error.into_cli_error(),
             Err(other) => CliError::Other(anyhow::anyhow!("SDK executor error: {other}")),
         },

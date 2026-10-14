@@ -21,12 +21,7 @@ pub enum DispatchResult {
     /// A decoded response value. The root `CliApp` will run
     /// `transform_response` / `recover_error` hooks and then format it.
     Value(serde_json::Value),
-    /// A single diagnostic record (a `--dry-run` request preview). Hooks run
-    /// as for `Value`, but the root `CliApp` formats it with
-    /// [`OutputPipeline::emit_record`](crate::formatter::OutputPipeline::emit_record)
-    /// so `table` output never mistakes it for a list response.
-    Record(serde_json::Value),
-    /// The binding already wrote output (streaming, file download, paged dry-run).
+    /// The binding already wrote output (dry-run, streaming, file download).
     /// The root `CliApp` skips its own formatting.
     Handled,
 }
@@ -155,22 +150,15 @@ pub trait Binding: Send + Sync {
     ///
     /// `op_path` is the command path (`["iam", "keys", "remove"]`) and
     /// `params` a JSON object of parameter name → value, exactly the shape
-    /// `--params` accepts. Returns the decoded response — `Value::Null` when
-    /// the operation succeeded without a body, e.g. a `204` delete.
+    /// `--params` accepts. Returns the decoded response, or `Ok(None)` when
+    /// the operation produced no body.
     ///
     /// Exists because some framework-owned commands need to call the API on
     /// the user's behalf — `profiles remove --revoke` deleting the key it
     /// created — and they have no `ArgMatches` for the target operation to
     /// hand to [`dispatch`](Self::dispatch). Everything downstream (auth,
     /// retries, TLS, base-URL resolution) is the same stack a normal
-    /// invocation uses; only the argument source differs. `root_matches`
-    /// is the parsed root command line, so global flags such as
-    /// `--base-url` and the server-variable flags apply exactly as they
-    /// would on a direct invocation. `profile` is the profile the call is
-    /// made on behalf of — the one being created or removed. The `profiles`
-    /// group itself runs unprofiled, so its stored server variables and
-    /// base URL would otherwise never reach the request; they rank exactly
-    /// where a selected profile's would (below flags, above env).
+    /// invocation uses; only the argument source differs.
     ///
     /// Returns `Ok(None)` from the default implementation, meaning "this
     /// binding does not own that path" — the caller should try the next.
@@ -178,8 +166,6 @@ pub trait Binding: Send + Sync {
         &'a self,
         _op_path: &'a [String],
         _params: &'a serde_json::Value,
-        _root_matches: &'a clap::ArgMatches,
-        _profile: Option<&'a crate::profiles::ResolvedProfile>,
     ) -> BoxFuture<'a, Result<Option<serde_json::Value>, CliError>> {
         Box::pin(async { Ok(None) })
     }

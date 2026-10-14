@@ -1,8 +1,8 @@
-# Acme Dist Test API CLI
+# Acme UAT API CLI
 
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-CLI%20generated%20by%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fzamn%2Facme-cli-dist-test)
 
-Command-line interface for the Acme Dist Test API.
+Command-line interface for the Acme UAT API.
 
 ## Table of contents
 
@@ -23,26 +23,26 @@ Command-line interface for the Acme Dist Test API.
 ### Shell (macOS / Linux)
 
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/zamn/acme-cli-dist-test/releases/latest/download/acme-dist-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/zamn/acme-cli-dist-test/releases/latest/download/fern-cli-sdk-installer.sh | sh
 ```
 
 ### PowerShell (Windows)
 
 ```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://github.com/zamn/acme-cli-dist-test/releases/latest/download/acme-dist-installer.ps1 | iex"
+powershell -ExecutionPolicy ByPass -c "irm https://github.com/zamn/acme-cli-dist-test/releases/latest/download/fern-cli-sdk-installer.ps1 | iex"
 ```
 
 ### Homebrew (macOS / Linux)
 
 ```bash
-brew install zamn/tap/acme-dist
+brew install zamn/tap/acme-hosted
 ```
 
 ### Scoop (Windows)
 
 ```powershell
 scoop bucket add zamn https://github.com/zamn/scoop-bucket
-scoop install acme-dist
+scoop install acme-hosted
 ```
 
 > Scoop installs the x64 build. It runs on ARM64 Windows under emulation.
@@ -53,37 +53,37 @@ If you prefer to build from source, install the [Rust toolchain](https://rustup.
 
 ```bash
 cargo build --release
-./target/release/acme-dist --help
+./target/release/acme-hosted --help
 ```
 
 ## Authentication
 
-This API requires authentication. Run `acme-dist --help` for details.
+This API requires authentication. Run `acme-hosted --help` for details.
 
 ## Quick start
 
 List available commands:
 
 ```bash
-acme-dist --help
+acme-hosted --help
 ```
 
 Call an API endpoint:
 
 ```bash
-acme-dist <resource> <method>
+acme-hosted <resource> <method>
 ```
 
-Run `acme-dist <resource> --help` to see available methods for a resource.
+Run `acme-hosted <resource> --help` to see available methods for a resource.
 
 ## Usage
 
-Every API resource appears as a subcommand (e.g. `acme-dist <resource> <method>`). Run `acme-dist <resource> --help` to see available methods.
+Every API resource appears as a subcommand (e.g. `acme-hosted <resource> <method>`). Run `acme-hosted <resource> --help` to see available methods.
 
 Provide request parameters as flags or as JSON:
 
 ```bash
-acme-dist <resource> <method> --json '{"key": "value"}'
+acme-hosted <resource> <method> --json '{"key": "value"}'
 ```
 
 ## Documentation
@@ -96,42 +96,42 @@ See [reference.md](./reference.md) for the full command reference.
 
 These flags are available on every operation:
 
-| Flag | Description |
-|------|-------------|
-| `--dry-run` | Validate the request locally and print the HTTP request without sending it |
-| `--json <JSON\|->` | Supply a request body as JSON (or `-` to read stdin) |
-| `--params <JSON>` | Merge extra parameters as JSON (overrides individual flags) |
-| `--format <json\|table\|yaml\|csv>` | Output format (default `json`) |
-| `--output <PATH>` | Write binary responses to a file |
-| `--base-url <URL>` | Override the API base URL |
-| `--no-extract` | Print the full response body instead of the `x-fern-sdk-return-value` extraction |
-| `--no-retry` | Disable retries declared by `x-fern-retries`, including network errors |
-| `-q, --quiet` | Suppress stdout output on success (errors still go to stderr) |
+| Flag                                | Description                                                                      |
+| ----------------------------------- | -------------------------------------------------------------------------------- |
+| `--dry-run`                         | Validate the request locally and print the HTTP request without sending it       |
+| `--json <JSON\|->`                  | Supply a request body as JSON (or `-` to read stdin)                             |
+| `--params <JSON>`                   | Merge extra parameters as JSON (overrides individual flags)                      |
+| `--format <json\|table\|yaml\|csv>` | Output format (default `json`)                                                   |
+| `--output <PATH>`                   | Write binary responses to a file                                                 |
+| `--base-url <URL>`                  | Override the API base URL                                                        |
+| `--no-extract`                      | Print the full response body instead of the `x-fern-sdk-return-value` extraction |
+| `--no-retry`                        | Disable retries declared by `x-fern-retries`, including network errors           |
+| `-q, --quiet`                       | Suppress stdout output on success (errors still go to stderr)                    |
 
 Operations the spec describes how to page (via `x-fern-pagination` or a root `page_token` parameter) also accept:
 
-| Flag | Description |
-|------|-------------|
-| `--page-all` | Auto-paginate and stream results as NDJSON |
-| `--page-limit <N>` | Max pages to fetch when auto-paginating (default `10`) |
+| Flag                | Description                                                |
+| ------------------- | ---------------------------------------------------------- |
+| `--page-all`        | Auto-paginate and stream results as NDJSON                 |
+| `--page-limit <N>`  | Max pages to fetch when auto-paginating (default `10`)     |
 | `--page-delay <MS>` | Delay between page fetches in milliseconds (default `100`) |
-| `--no-pager` | Disable the pager even on interactive terminals |
+| `--no-pager`        | Disable the pager even on interactive terminals            |
 
 Operations the spec marks as streaming (via `x-fern-streaming`) also accept:
 
-| Flag | Description |
-|------|-------------|
+| Flag          | Description                                                                |
+| ------------- | -------------------------------------------------------------------------- |
 | `--no-stream` | Buffer the streaming response and print it as a single value once complete |
 
 ### Environment variables
 
-| Variable | Description |
-|----------|-------------|
-| `ACME_DIST_BASE_URL` | Override the API base URL |
-| `ACME_DIST_CA_BUNDLE` | Path to PEM file with extra trust roots (or `SSL_CERT_FILE`) |
-| `ACME_DIST_INSECURE=1` | Skip TLS verification (debugging only) |
-| `ACME_DIST_PROXY` | HTTP(S) proxy URL |
-| `ACME_DIST_TIMEOUT_SECS` | Total request timeout in seconds |
+| Variable                   | Description                                                  |
+| -------------------------- | ------------------------------------------------------------ |
+| `ACME_HOSTED_BASE_URL`     | Override the API base URL                                    |
+| `ACME_HOSTED_CA_BUNDLE`    | Path to PEM file with extra trust roots (or `SSL_CERT_FILE`) |
+| `ACME_HOSTED_INSECURE=1`   | Skip TLS verification (debugging only)                       |
+| `ACME_HOSTED_PROXY`        | HTTP(S) proxy URL                                            |
+| `ACME_HOSTED_TIMEOUT_SECS` | Total request timeout in seconds                             |
 
 Standard environment variables (`HTTPS_PROXY` / `HTTP_PROXY` / `NO_PROXY` / `SSL_CERT_FILE`) are also honored.
 
@@ -143,13 +143,13 @@ Without `--format`, output (including errors) is `table` when stdout is a termin
 
 ```bash
 # Pipe JSON output through jq
-acme-dist <resource> <method> --format json | jq
+acme-hosted <resource> <method> --format json | jq
 
 # Keep the human rendering even when piped
-acme-dist <resource> <method> --human | less
+acme-hosted <resource> <method> --human | less
 
 # Machine-readable catalog of every operation (same as --schema)
-acme-dist --help --format json | jq '.operations | length'
+acme-hosted --help --format json | jq '.operations | length'
 ```
 
 ### Shell completion
@@ -157,10 +157,9 @@ acme-dist --help --format json | jq '.operations | length'
 Generate shell completion scripts:
 
 ```bash
-acme-dist completion <bash|zsh|fish|powershell>
+acme-hosted completion <bash|zsh|fish|powershell>
 ```
 
 ## Attribution
 
 Built on [fern-cli-sdk](https://github.com/fern-api/fern), Copyright Fern, licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
-
