@@ -65,6 +65,7 @@ with the following sub-clients:
 | Field            | Type                                  | Description        |
 | ---------------- | ------------------------------------- | ------------------ |
 | `client.widgets` | `acme_hosted_sdk::api::WidgetsClient` | widgets operations |
+| `client.gadgets` | `acme_hosted_sdk::api::GadgetsClient` | gadgets operations |
 
 ### 3. Key Patterns
 

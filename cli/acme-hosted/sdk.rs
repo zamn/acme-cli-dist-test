@@ -63,6 +63,7 @@ pub fn client(ctx: &AppContext) -> acme_hosted_sdk::api::ApiClient {
     acme_hosted_sdk::api::ApiClient {
         config,
         widgets: acme_hosted_sdk::api::WidgetsClient { http_client: http_client.clone() },
+        gadgets: acme_hosted_sdk::api::GadgetsClient { http_client: http_client.clone() },
     }
 }
 

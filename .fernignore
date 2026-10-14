@@ -1,2 +1,5 @@
 # Files owned by the user — fern generate will not overwrite these.
 cli/acme-dist/custom.rs
+.fern/replay.lock
+.fern/replay.yml
+.gitattributes
