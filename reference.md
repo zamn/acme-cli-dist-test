@@ -4,7 +4,16 @@ Full command reference for `acme-hosted`.
 
 ## Commands
 
+- [`acme-hosted gadgets`](#acme-hosted-gadgets)
 - [`acme-hosted widgets`](#acme-hosted-widgets)
+
+---
+
+### `acme-hosted gadgets`
+
+#### `acme-hosted gadgets list-gadgets`
+
+`GET /gadgets`
 
 ---
 

@@ -9,6 +9,6 @@
 
 pub mod resources;
 
-pub use resources::{ApiClient, WidgetsClient};
+pub use resources::{ApiClient, GadgetsClient, WidgetsClient};
 
 pub use acme_hosted_types::*;
