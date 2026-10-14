@@ -47,3 +47,6 @@ impl Default for ClientConfig {
         }
     }
 }
+
+// Customer-authored addition (replay test marker FSDK-REPLAY-1).
+pub const CUSTOMER_REPLAY_MARKER: &str = "replay-test";
