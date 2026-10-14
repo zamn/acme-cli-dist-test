@@ -1,52 +1,55 @@
-# Acme Dist Test API CLI Reference
+# Reference
 
-Full command reference for `acme-dist`.
+## Widgets
 
-## Commands
+<details><summary><code>client.widgets.<a href="/src/api/resources/widgets/client/Client.ts">listWidgets</a>() -> FernApi.ListWidgetsResponse</code></summary>
+<dl>
+<dd>
 
-- [`acme-dist widgets`](#acme-dist-widgets)
+#### 📝 Description
 
----
+<dl>
+<dd>
 
-### `acme-dist widgets`
+<dl>
+<dd>
+</dd>
+</dl>
+</dd>
+</dl>
 
-#### `acme-dist widgets list-widgets`
+#### 🔌 Usage
 
-List widgets
+<dl>
+<dd>
 
-`GET /widgets`
+<dl>
+<dd>
 
----
+```typescript
+await client.widgets.listWidgets();
+```
 
-## Global flags
+</dd>
+</dl>
+</dd>
+</dl>
 
-These flags are available on every command:
+#### ⚙️ Parameters
 
-| Flag | Description |
-|------|-------------|
-| `--dry-run` | Print the HTTP request without sending it |
-| `--json <JSON\|->` | Supply the request body as JSON (or `-` for stdin) |
-| `--params <JSON>` | Merge extra parameters as JSON |
-| `--format <json\|table\|yaml\|csv>` | Output format (default: `json`) |
-| `--output <PATH>` | Write binary responses to a file |
-| `--base-url <URL>` | Override the API base URL |
-| `--no-extract` | Print the full response body instead of the `x-fern-sdk-return-value` extraction |
-| `--no-retry` | Disable retries declared by `x-fern-retries`, including network errors |
-| `-q, --quiet` | Suppress stdout on success |
-| `-h, --help` | Print help |
-| `-V, --version` | Print version |
+<dl>
+<dd>
 
-Operations the spec describes how to page (via `x-fern-pagination` or a root `page_token` parameter) also accept:
+<dl>
+<dd>
 
-| Flag | Description |
-|------|-------------|
-| `--page-all` | Auto-paginate and stream all results |
-| `--page-limit <N>` | Max pages to fetch (default: `10`) |
-| `--page-delay <MS>` | Delay between page fetches in milliseconds (default: `100`) |
-| `--no-pager` | Disable the pager even on interactive terminals |
+**requestOptions:** `WidgetsClient.RequestOptions`
 
-Operations the spec marks as streaming (via `x-fern-streaming`) also accept:
+</dd>
+</dl>
+</dd>
+</dl>
 
-| Flag | Description |
-|------|-------------|
-| `--no-stream` | Buffer the streaming response and print it as a single value once complete |
+</dd>
+</dl>
+</details>

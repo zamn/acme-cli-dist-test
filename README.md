@@ -1,166 +1,243 @@
-# Acme Dist Test API CLI
+# Fern TypeScript Library
 
-[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-CLI%20generated%20by%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fzamn%2Facme-cli-dist-test)
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=Fern%2FTypeScript)
 
-Command-line interface for the Acme Dist Test API.
+The Fern TypeScript library provides convenient access to the Fern APIs from TypeScript.
 
-## Table of contents
+## Table of Contents
 
-- [Installation](#installation)
-- [Authentication](#authentication)
-- [Quick start](#quick-start)
+- [Reference](#reference)
 - [Usage](#usage)
-- [Documentation](#documentation)
+- [Environments](#environments)
+- [Exception Handling](#exception-handling)
 - [Advanced](#advanced)
-  - [Common flags](#common-flags)
-  - [Environment variables](#environment-variables)
-  - [Output formats](#output-formats)
-  - [Shell completion](#shell-completion)
-- [Attribution](#attribution)
+  - [Subpackage Exports](#subpackage-exports)
+  - [Additional Headers](#additional-headers)
+  - [Additional Query String Parameters](#additional-query-string-parameters)
+  - [Retries](#retries)
+  - [Timeouts](#timeouts)
+  - [Aborting Requests](#aborting-requests)
+  - [Access Raw Response Data](#access-raw-response-data)
+  - [Logging](#logging)
+  - [Custom Fetch](#custom-fetch)
+  - [Custom Fetcher](#custom-fetcher)
+  - [Runtime Compatibility](#runtime-compatibility)
+- [Contributing](#contributing)
 
-## Installation
+## Reference
 
-### Shell (macOS / Linux)
-
-```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/zamn/acme-cli-dist-test/releases/latest/download/acme-dist-installer.sh | sh
-```
-
-### PowerShell (Windows)
-
-```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://github.com/zamn/acme-cli-dist-test/releases/latest/download/acme-dist-installer.ps1 | iex"
-```
-
-### Homebrew (macOS / Linux)
-
-```bash
-brew install zamn/tap/acme-dist
-```
-
-### Scoop (Windows)
-
-```powershell
-scoop bucket add zamn https://github.com/zamn/scoop-bucket
-scoop install acme-dist
-```
-
-> Scoop installs the x64 build. It runs on ARM64 Windows under emulation.
-
-### Build from source
-
-If you prefer to build from source, install the [Rust toolchain](https://rustup.rs/) and run:
-
-```bash
-cargo build --release
-./target/release/acme-dist --help
-```
-
-## Authentication
-
-This API requires authentication. Run `acme-dist --help` for details.
-
-## Quick start
-
-List available commands:
-
-```bash
-acme-dist --help
-```
-
-Call an API endpoint:
-
-```bash
-acme-dist <resource> <method>
-```
-
-Run `acme-dist <resource> --help` to see available methods for a resource.
+A full reference for this library is available [here](./reference.md).
 
 ## Usage
 
-Every API resource appears as a subcommand (e.g. `acme-dist <resource> <method>`). Run `acme-dist <resource> --help` to see available methods.
+Instantiate and use the client with the following:
 
-Provide request parameters as flags or as JSON:
+```typescript
+import { FernApiClient } from '@zamn/acme-uat-sdk';
 
-```bash
-acme-dist <resource> <method> --json '{"key": "value"}'
+const client = new FernApiClient({});
+await client.widgets.listWidgets();
 ```
 
-## Documentation
+## Environments
 
-See [reference.md](./reference.md) for the full command reference.
+This SDK allows you to configure different environments for API requests.
+
+```typescript
+import { FernApiClient, FernApiEnvironment } from '@zamn/acme-uat-sdk';
+
+const client = new FernApiClient({
+  environment: FernApiEnvironment.Default,
+});
+```
+
+## Exception Handling
+
+When the API returns a non-success status code (4xx or 5xx response), a subclass of the following error
+will be thrown.
+
+```typescript
+import { FernApiError } from "@zamn/acme-uat-sdk";
+
+try {
+    await client.widgets.listWidgets(...);
+} catch (err) {
+    if (err instanceof FernApiError) {
+        console.log(err.statusCode);
+        console.log(err.message);
+        console.log(err.body);
+        console.log(err.rawResponse);
+    }
+}
+```
 
 ## Advanced
 
-### Common flags
+### Subpackage Exports
 
-These flags are available on every operation:
+This SDK supports direct imports of subpackage clients, which allows JavaScript bundlers to tree-shake and include only the imported subpackage code. This results in much smaller bundle sizes.
 
-| Flag | Description |
-|------|-------------|
-| `--dry-run` | Validate the request locally and print the HTTP request without sending it |
-| `--json <JSON\|->` | Supply a request body as JSON (or `-` to read stdin) |
-| `--params <JSON>` | Merge extra parameters as JSON (overrides individual flags) |
-| `--format <json\|table\|yaml\|csv>` | Output format (default `json`) |
-| `--output <PATH>` | Write binary responses to a file |
-| `--base-url <URL>` | Override the API base URL |
-| `--no-extract` | Print the full response body instead of the `x-fern-sdk-return-value` extraction |
-| `--no-retry` | Disable retries declared by `x-fern-retries`, including network errors |
-| `-q, --quiet` | Suppress stdout output on success (errors still go to stderr) |
+```typescript
+import { WidgetsClient } from '@zamn/acme-uat-sdk/widgets';
 
-Operations the spec describes how to page (via `x-fern-pagination` or a root `page_token` parameter) also accept:
-
-| Flag | Description |
-|------|-------------|
-| `--page-all` | Auto-paginate and stream results as NDJSON |
-| `--page-limit <N>` | Max pages to fetch when auto-paginating (default `10`) |
-| `--page-delay <MS>` | Delay between page fetches in milliseconds (default `100`) |
-| `--no-pager` | Disable the pager even on interactive terminals |
-
-Operations the spec marks as streaming (via `x-fern-streaming`) also accept:
-
-| Flag | Description |
-|------|-------------|
-| `--no-stream` | Buffer the streaming response and print it as a single value once complete |
-
-### Environment variables
-
-| Variable | Description |
-|----------|-------------|
-| `ACME_DIST_BASE_URL` | Override the API base URL |
-| `ACME_DIST_CA_BUNDLE` | Path to PEM file with extra trust roots (or `SSL_CERT_FILE`) |
-| `ACME_DIST_INSECURE=1` | Skip TLS verification (debugging only) |
-| `ACME_DIST_PROXY` | HTTP(S) proxy URL |
-| `ACME_DIST_TIMEOUT_SECS` | Total request timeout in seconds |
-
-Standard environment variables (`HTTPS_PROXY` / `HTTP_PROXY` / `NO_PROXY` / `SSL_CERT_FILE`) are also honored.
-
-### Output formats
-
-Use the global `--format` flag to control output. Supported values: `json`, `table`, `yaml`, `csv`, `jsonl`, `raw`, `http`.
-
-Without `--format`, output (including errors) is `table` when stdout is a terminal and `json` when it is piped or redirected — so scripts and agents get JSON by default. Pass `--human` to keep the interactive rendering when piping to a pager, and `--format json` to pin JSON in a terminal.
-
-```bash
-# Pipe JSON output through jq
-acme-dist <resource> <method> --format json | jq
-
-# Keep the human rendering even when piped
-acme-dist <resource> <method> --human | less
-
-# Machine-readable catalog of every operation (same as --schema)
-acme-dist --help --format json | jq '.operations | length'
+const client = new WidgetsClient({...});
 ```
 
-### Shell completion
+### Additional Headers
 
-Generate shell completion scripts:
+If you would like to send additional headers as part of the request, use the `headers` request option.
 
-```bash
-acme-dist completion <bash|zsh|fish|powershell>
+```typescript
+const response = await client.widgets.listWidgets(..., {
+    headers: {
+        'X-Custom-Header': 'custom value'
+    }
+});
 ```
 
-## Attribution
+### Additional Query String Parameters
 
-Built on [fern-cli-sdk](https://github.com/fern-api/fern), Copyright Fern, licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+> [!NOTE]
+> The `queryParams` request option is accepted by the type signature but is not yet applied to the
+> outgoing request. Until it is wired up, put additional query string parameters in the URL you
+> pass to `client.fetch()` (see [Custom Fetch](#custom-fetch)).
 
+```typescript
+const response = await client.widgets.listWidgets(..., {
+    queryParams: {
+        'customQueryParamKey': 'custom query param value'
+    }
+});
+```
+
+### Retries
+
+The SDK retries requests that fail with a 408 (Timeout), 429 (Too Many Requests), or any 5XX server
+error, using exponential backoff, up to a configured retry limit (default: 2).
+
+Use the `maxRetries` request option to configure this behavior.
+
+```typescript
+const response = await client.widgets.listWidgets(..., {
+    maxRetries: 0 // override maxRetries at the request level
+});
+```
+
+### Timeouts
+
+The SDK defaults to a 60 second timeout. Use the `timeoutInSeconds` option to configure this behavior.
+
+```typescript
+const response = await client.widgets.listWidgets(..., {
+    timeoutInSeconds: 30 // override timeout to 30s
+});
+```
+
+### Aborting Requests
+
+The SDK allows users to abort requests at any point by passing in an abort signal.
+
+```typescript
+const controller = new AbortController();
+const response = await client.widgets.listWidgets(..., {
+    abortSignal: controller.signal
+});
+controller.abort(); // aborts the request
+```
+
+### Access Raw Response Data
+
+The SDK provides access to raw response data, including headers, through the `.withRawResponse()` method.
+The `.withRawResponse()` method returns a promise that resolves to an object with a `data` and a `rawResponse` property.
+
+```typescript
+const { data, rawResponse } = await client.widgets.listWidgets(...).withRawResponse();
+
+console.log(data);
+console.log(rawResponse.headers['X-My-Header']);
+```
+
+### Logging
+
+The SDK supports logging. You can configure the logger by passing in a `logging` object to the client options.
+
+```typescript
+import { FernApiClient, logging } from "@zamn/acme-uat-sdk";
+
+const client = new FernApiClient({
+    ...
+    logging: {
+        level: logging.LogLevel.Debug, // defaults to logging.LogLevel.Info
+        logger: new logging.ConsoleLogger(), // defaults to ConsoleLogger
+        silent: false, // defaults to true, set to false to enable logging
+    }
+});
+```
+
+The `logging` object can have the following properties:
+
+- `level`: The log level to use. Defaults to `logging.LogLevel.Info`.
+- `logger`: The logger to use. Defaults to a `logging.ConsoleLogger`.
+- `silent`: Whether to silence the logger. Defaults to `true`.
+
+To provide a custom logger, you can pass in an object that implements the `logging.ILogger` interface.
+
+### Custom Fetch
+
+The SDK provides a low-level `fetch` method for making custom HTTP requests while still
+benefiting from SDK-level configuration like authentication, retries, timeouts, and logging.
+This is useful for calling API endpoints not yet supported in the SDK.
+
+```typescript
+const response = await client.fetch(
+  '/v1/custom/endpoint',
+  {
+    method: 'GET',
+  },
+  {
+    timeoutInSeconds: 30,
+    maxRetries: 3,
+    headers: {
+      'X-Custom-Header': 'custom-value',
+    },
+  },
+);
+
+const data = await response.json();
+```
+
+### Custom Fetcher
+
+The SDK provides a way for you to customize the underlying fetch implementation it uses to send
+requests. If you're running in an unsupported environment, this provides a way for you to break
+glass and ensure the SDK works.
+
+```typescript
+import { FernApiClient } from "@zamn/acme-uat-sdk";
+
+const client = new FernApiClient({
+    ...
+    fetch: // provide your implementation here
+});
+```
+
+### Runtime Compatibility
+
+The SDK works in the following runtimes:
+
+- Node.js 18+
+- Vercel
+- Cloudflare Workers
+- Deno v1.25+
+- Bun 1.0+
+- React Native
+
+## Contributing
+
+While we value open-source contributions to this SDK, this library is generated programmatically.
+Additions made directly to this library would have to be moved over to our generation code,
+otherwise they would be overwritten upon the next generated release. Feel free to open a PR as
+a proof of concept, but know that we will not be able to merge it as-is. We suggest opening
+an issue first to discuss with us!
+
+On the other hand, contributions to the README are always very welcome!

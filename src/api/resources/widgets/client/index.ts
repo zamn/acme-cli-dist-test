@@ -1,0 +1,1 @@
+export { WidgetsClient } from './Client';
