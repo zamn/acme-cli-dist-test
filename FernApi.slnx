@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/FernApi.Test/FernApi.Test.csproj" />
+  <Project Path="src/FernApi/FernApi.csproj" />
+</Solution>

@@ -1,0 +1,65 @@
+name: Test
+on:
+  pull_request:
+  push:
+    branches: ['main']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Test
+        run: |
+          # Generated tests are expected here, so their absence is a failure rather than a skip:
+          # an emitter regression must break the build, not print a friendly message and exit 0.
+          if [ ! -f "src/FernApi.Test/FernApi.Test.csproj" ]; then
+            echo "::error::Expected the generated test project at src/FernApi.Test/FernApi.Test.csproj, found none."
+            exit 1
+          fi
+
+          set +e
+          dotnet test "src/FernApi.Test/FernApi.Test.csproj" --logger "trx;LogFileName=results.trx" --results-directory ./TestResults
+          status=$?
+          set -e
+
+          # The runner's own verdict, exit status FIRST. Neither half is sufficient alone:
+          #  - `dotnet test` exits 0 on a project that discovered nothing, so a green exit says
+          #    nothing about whether any test ran;
+          #  - a TRX from a run that failed still lists the tests it got through, so reading the
+          #    count without checking the status first reports a healthy number for a broken run.
+          if [ "$status" -ne 0 ]; then
+            echo "::error::dotnet test failed."
+            exit "$status"
+          fi
+
+          trx=$(find ./TestResults -name 'results.trx' -print -quit)
+          if [ -z "$trx" ]; then
+            echo "::error::dotnet test exited 0 but wrote no TRX result file."
+            exit 1
+          fi
+
+          # The <Counters total="N" .../> element the VSTest logger writes. Counted from the result
+          # file rather than from the generated sources: a class whose methods lost their [Test]
+          # attribute still compiles, still exists on disk, and contributes zero collected tests.
+          ran=$(grep -o 'total="[0-9]*"' "$trx" | head -1 | grep -o '[0-9]*')
+          expected=4
+          if [ -z "$ran" ]; then
+            echo "::error::Could not read the test count from $trx."
+            exit 1
+          fi
+          # `-lt`, not `-ne`: the count guards against the EMITTER producing fewer tests than it
+          # generated for. This workflow ships in the customer's repository, so tests they add
+          # themselves push the total ABOVE the expected figure, and an exact match would fail a
+          # build for the one thing we want people doing with a generated test project.
+          if [ "$ran" -lt "$expected" ]; then
+            echo "::error::Expected at least $expected generated test(s), the runner ran $ran."
+            exit 1
+          fi
+          echo "dotnet test ran $ran of $expected expected test(s)."
