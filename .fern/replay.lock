@@ -18,14 +18,20 @@ generations:
     cli_version: unknown
     generator_versions:
       fernapi/fern-cli-generator: 0.49.0
-current_generation: 0fa9c112a91db3ce0ed1488e7d30162d9933c984
+  - commit_sha: 7cf4b99974c82ca72f45347a13ef20664f57eba8
+    tree_hash: 55c3f3a9b5e2be8ad6fdbeb326a6b5fb8bda291b
+    timestamp: 2026-10-16T14:43:49.555Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-cli-generator: 0.49.0
+current_generation: 7cf4b99974c82ca72f45347a13ef20664f57eba8
 patches:
   - id: patch-5a70afc8
     content_hash: sha256:dbdcb4f36cbf68d933f083e0c094b8093d5a16801fad14a3db18ebe963cb317c
     original_commit: 5a70afc82a4b75ca7d9439b270c8a69bedf6d406
     original_message: "Customer edit: add replay test marker to config.rs (after lockfile)"
     original_author: Adam Hamot <adamhamot@gmail.com>
-    base_generation: 0fa9c112a91db3ce0ed1488e7d30162d9933c984
+    base_generation: 7cf4b99974c82ca72f45347a13ef20664f57eba8
     files:
       - acme-hosted-sdk/src/config.rs
     patch_content: |
@@ -94,12 +100,13 @@ patches:
 
         // Customer-authored addition (replay test marker FSDK-REPLAY-2).
         pub const CUSTOMER_REPLAY_MARKER: &str = "replay-test";
+    user_owned: true
   - id: patch-858038c9
     content_hash: sha256:a9edd9de5f5e1477683a27380c4a49f0359b335a3a1f10f0900a3e27d8870f7b
     original_commit: 858038c9d88dc515440311750fe35db7740c74b8
     original_message: "prodval: add canary workflow (not in .fernignore)"
     original_author: Adam Hamot <adamhamot@gmail.com>
-    base_generation: 0fa9c112a91db3ce0ed1488e7d30162d9933c984
+    base_generation: 7cf4b99974c82ca72f45347a13ef20664f57eba8
     files:
       - .github/workflows/canary.yml
     patch_content: |
