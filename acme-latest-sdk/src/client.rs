@@ -1,4 +1,4 @@
-use crate::api::resources::ApiClient;
+use crate::api::resources::WidgetsClient;
 use crate::Environment;
 use crate::{ApiError, ClientConfig};
 use std::collections::HashMap;
@@ -116,8 +116,8 @@ impl ApiClientBuilder {
     }
 
     /// Build the client with validation
-    pub fn build(self) -> Result<ApiClient, ApiError> {
-        ApiClient::new(self.config)
+    pub fn build(self) -> Result<WidgetsClient, ApiError> {
+        WidgetsClient::new(self.config)
     }
 }
 #[cfg(test)]

@@ -1,5 +1,5 @@
 [workspace]
-members = ["cargo:.", "cargo:acme-hosted-types", "cargo:acme-hosted-sdk"]
+members = ["cargo:.", "cargo:acme-latest-types", "cargo:acme-latest-sdk"]
 
 # Config for 'dist'
 [dist]
@@ -13,7 +13,7 @@ ci = "github"
 # musl builds.
 precise-builds = true
 # The installers to generate for each app
-installers = ["shell", "powershell", "homebrew"]
+installers = ["shell", "powershell"]
 # Whether to enable GitHub Attestations
 github-attestations = true
 # Target platforms to build apps for (Rust target-triple syntax)
@@ -21,7 +21,7 @@ targets = ["aarch64-apple-darwin", "aarch64-unknown-linux-gnu", "aarch64-unknown
 # Which actions to run on pull requests
 pr-run-mode = "plan"
 # Publish jobs to run (npm publishing deferred until pipeline is validated)
-publish-jobs = ["homebrew"]
+publish-jobs = []
 # Don't overwrite release.yml on `dist init` (preserves customizations)
 allow-dirty = ["ci"]
 # The archive format to use for windows builds (defaults .zip)
@@ -34,5 +34,3 @@ install-path = "CARGO_HOME"
 install-updater = false
 default-features = false
 features = ["rustls"]
-tap = "zamn/homebrew-tap"
-formula = "acme-hosted"
