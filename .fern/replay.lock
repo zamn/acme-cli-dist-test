@@ -12,5 +12,117 @@ generations:
     cli_version: unknown
     generator_versions:
       fernapi/fern-cli-generator: 0.49.0
-current_generation: 0f5602aaa19844e0b3084c04af208e6824a9efcb
-patches: []
+  - commit_sha: 0fa9c112a91db3ce0ed1488e7d30162d9933c984
+    tree_hash: e99d0bb30e6c9528635815efe8e4ef54b83808d2
+    timestamp: 2026-10-16T14:42:52.026Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-cli-generator: 0.49.0
+current_generation: 0fa9c112a91db3ce0ed1488e7d30162d9933c984
+patches:
+  - id: patch-5a70afc8
+    content_hash: sha256:dbdcb4f36cbf68d933f083e0c094b8093d5a16801fad14a3db18ebe963cb317c
+    original_commit: 5a70afc82a4b75ca7d9439b270c8a69bedf6d406
+    original_message: "Customer edit: add replay test marker to config.rs (after lockfile)"
+    original_author: Adam Hamot <adamhamot@gmail.com>
+    base_generation: 0fa9c112a91db3ce0ed1488e7d30162d9933c984
+    files:
+      - acme-hosted-sdk/src/config.rs
+    patch_content: |
+      diff --git a/acme-hosted-sdk/src/config.rs b/acme-hosted-sdk/src/config.rs
+      index b2b64ef..db66d2d 100644
+      --- a/acme-hosted-sdk/src/config.rs
+      +++ b/acme-hosted-sdk/src/config.rs
+      @@ -47,3 +47,6 @@ impl Default for ClientConfig {
+               }
+           }
+       }
+      +
+      +// Customer-authored addition (replay test marker FSDK-REPLAY-2).
+      +pub const CUSTOMER_REPLAY_MARKER: &str = "replay-test";
+    theirs_snapshot:
+      acme-hosted-sdk/src/config.rs: |
+        use crate::Environment;
+        use std::collections::HashMap;
+        use std::time::Duration;
+
+        #[derive(Debug, Clone)]
+        pub struct ClientConfig {
+            pub base_url: String,
+            pub api_key: Option<String>,
+            pub token: Option<String>,
+            pub username: Option<String>,
+            pub password: Option<String>,
+            pub client_id: Option<String>,
+            pub client_secret: Option<String>,
+            pub oauth_token_endpoint: Option<String>,
+            pub oauth_token_exchange: Option<crate::OAuthTokenExchangeConfig>,
+            pub timeout: Duration,
+            pub max_retries: u32,
+            pub custom_headers: HashMap<String, String>,
+            pub user_agent: String,
+            /// Optional custom `reqwest` client, used as-is for every request.
+            /// When set, it owns all transport-level configuration (TLS, proxies, timeout,
+            /// user agent); when `None` the SDK builds its own client from `timeout` and
+            /// `user_agent`.
+            pub reqwest_client: Option<reqwest::Client>,
+        }
+        impl Default for ClientConfig {
+            fn default() -> Self {
+                Self {
+                    base_url: Environment::default().url().to_string(),
+                    api_key: None,
+                    token: None,
+                    username: None,
+                    password: None,
+                    client_id: None,
+                    client_secret: None,
+                    oauth_token_endpoint: None,
+                    oauth_token_exchange: None,
+                    timeout: Duration::from_secs(60),
+                    max_retries: 3,
+                    custom_headers: HashMap::from([
+                        ("X-Fern-Language".to_string(), "Rust".to_string()),
+                        ("X-Fern-SDK-Name".to_string(), "acme_hosted_sdk".to_string()),
+                        ("X-Fern-SDK-Version".to_string(), "0.1.0".to_string()),
+                    ]),
+                    user_agent: "Api Rust SDK".to_string(),
+                    reqwest_client: None,
+                }
+            }
+        }
+
+        // Customer-authored addition (replay test marker FSDK-REPLAY-2).
+        pub const CUSTOMER_REPLAY_MARKER: &str = "replay-test";
+  - id: patch-858038c9
+    content_hash: sha256:a9edd9de5f5e1477683a27380c4a49f0359b335a3a1f10f0900a3e27d8870f7b
+    original_commit: 858038c9d88dc515440311750fe35db7740c74b8
+    original_message: "prodval: add canary workflow (not in .fernignore)"
+    original_author: Adam Hamot <adamhamot@gmail.com>
+    base_generation: 0fa9c112a91db3ce0ed1488e7d30162d9933c984
+    files:
+      - .github/workflows/canary.yml
+    patch_content: |
+      diff --git a/.github/workflows/canary.yml b/.github/workflows/canary.yml
+      new file mode 100644
+      index 0000000..948df64
+      --- /dev/null
+      +++ b/.github/workflows/canary.yml
+      @@ -0,0 +1,7 @@
+      +name: canary
+      +on: workflow_dispatch
+      +jobs:
+      +  noop:
+      +    runs-on: ubuntu-latest
+      +    steps:
+      +      - run: echo canary
+    theirs_snapshot:
+      .github/workflows/canary.yml: |
+        name: canary
+        on: workflow_dispatch
+        jobs:
+          noop:
+            runs-on: ubuntu-latest
+            steps:
+              - run: echo canary
+    user_owned: true
