@@ -1,8 +1,8 @@
 [package]
-name = "fern-cli-sdk"
-version = "0.2.1"
+name = "acme-beta"
+version = "0.3.0"
 edition = "2021"
-description = "CLI for the Acme UAT API"
+description = "CLI generator — dynamic command surface from OpenAPI and GraphQL schemas"
 license = "Apache-2.0"
 repository = "https://github.com/zamn/acme-cli-dist-test"
 homepage = "https://github.com/zamn/acme-cli-dist-test"
@@ -15,8 +15,8 @@ name = "fern_cli_sdk"
 path = "src/lib.rs"
 
 [[bin]]
-name = "acme-hosted"
-path = "cli/acme-hosted/main.rs"
+name = "acme-beta"
+path = "cli/acme-beta/main.rs"
 
 [features]
 # TLS backend selection.
@@ -51,7 +51,7 @@ anyhow = "1"
 base64 = "0.22"
 bytes = "1"
 clap = { version = "4", features = ["derive", "string", "env"] }
-clap_complete = "4"
+clap_complete = { version = "4", features = ["unstable-dynamic"] }
 clap_mangen = "0.2"
 hmac = "0.12"
 dotenvy = "0.15"
@@ -140,8 +140,8 @@ keyring = { version = "3", features = ["apple-native", "windows-native", "sync-s
 dist = true
 
 # The profile that 'cargo dist' will build with
-[dependencies.acme_hosted_sdk]
-path = "acme-hosted-sdk"
+[dependencies.acme_beta_sdk]
+path = "acme-beta-sdk"
 
 [profile.dist]
 inherits = "release"

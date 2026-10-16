@@ -8,7 +8,7 @@ use fern_cli_sdk::app::CliApp;
 use fern_cli_sdk::openapi::OpenApiBinding;
 
 fn main() {
-    let app = CliApp::new("acme-hosted")
+    let app = CliApp::new("acme-beta")
         .binding(
             OpenApiBinding::new()
                 .spec(include_str!("openapi0.json"))

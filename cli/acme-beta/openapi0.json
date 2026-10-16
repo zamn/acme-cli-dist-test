@@ -1,6 +1,6 @@
 {
   "openapi": "3.0.3",
-  "info": { "title": "Acme UAT API", "version": "1.0.0" },
+  "info": { "title": "Acme Beta API", "version": "1.0.0" },
   "servers": [{ "url": "https://api.example.test" }],
   "paths": {
     "/widgets": {
@@ -13,22 +13,6 @@
             "content": {
               "application/json": {
                 "schema": { "type": "object", "properties": { "id": { "type": "string" } } }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/gadgets": {
-      "get": {
-        "operationId": "listGadgets",
-        "tags": ["gadgets"],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": { "type": "object", "properties": { "name": { "type": "string" } } }
               }
             }
           }

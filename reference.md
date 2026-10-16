@@ -1,25 +1,16 @@
-# Acme UAT API CLI Reference
+# Acme Beta API CLI Reference
 
-Full command reference for `acme-hosted`.
+Full command reference for `acme-beta`.
 
 ## Commands
 
-- [`acme-hosted gadgets`](#acme-hosted-gadgets)
-- [`acme-hosted widgets`](#acme-hosted-widgets)
+- [`acme-beta widgets`](#acme-beta-widgets)
 
 ---
 
-### `acme-hosted gadgets`
+### `acme-beta widgets`
 
-#### `acme-hosted gadgets list-gadgets`
-
-`GET /gadgets`
-
----
-
-### `acme-hosted widgets`
-
-#### `acme-hosted widgets list-widgets`
+#### `acme-beta widgets list-widgets`
 
 `GET /widgets`
 

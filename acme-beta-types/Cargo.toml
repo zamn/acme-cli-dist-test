@@ -1,6 +1,6 @@
 [package]
-name = "acme_hosted_types"
-version = "0.0.0"
+name = "acme_beta_types"
+version = "0.3.0"
 edition = "2021"
 
 [lib]
