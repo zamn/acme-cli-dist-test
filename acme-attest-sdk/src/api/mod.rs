@@ -1,4 +1,4 @@
-//! API client and types for the Acme UAT API
+//! API client and types for the Acme Beta API
 //!
 //! This module contains all the API definitions including request/response types
 //! and client implementations for interacting with the API.
@@ -9,6 +9,6 @@
 
 pub mod resources;
 
-pub use resources::{ApiClient, GadgetsClient, WidgetsClient};
+pub use resources::{ApiClient, WidgetsClient};
 
-pub use acme_hosted_types::*;
+pub use acme_attest_types::*;

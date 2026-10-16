@@ -16,14 +16,14 @@ impl WidgetsClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use acme_hosted_sdk::prelude::*;
+    /// use acme_attest_sdk::prelude::*;
     ///
     /// #[tokio::main]
     /// async fn main() {
     ///     let config = ClientConfig {
     ///         ..Default::default()
     ///     };
-    ///     let client = AcmeHostedClient::new(config).expect("Failed to build client");
+    ///     let client = AcmeAttestClient::new(config).expect("Failed to build client");
     ///     client.widgets.list_widgets(None).await;
     /// }
     /// ```
