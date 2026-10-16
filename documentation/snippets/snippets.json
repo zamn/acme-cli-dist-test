@@ -1,0 +1,11 @@
+{
+  "endpoints": {
+    "/widgets": {
+      "get": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"context\"\n  \"github.com/zamn/acme-cli-dist-test\"\n)\n\nconfig := api.NewConfig()\n\nclient := api.NewClient(config)\n\nresponse, err := client.Widgets.ListWidgets(context.Background())\nif err != nil {\n  panic(err)\n}\n\nfmt.Println(response)\n"
+    },
+    "/gadgets": {
+      "get": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"context\"\n  \"github.com/zamn/acme-cli-dist-test\"\n)\n\nconfig := api.NewConfig()\n\nclient := api.NewClient(config)\n\nresponse, err := client.Gadgets.ListGadgets(context.Background())\nif err != nil {\n  panic(err)\n}\n\nfmt.Println(response)\n"
+    }
+  },
+  "example": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"context\"\n  \"github.com/zamn/acme-cli-dist-test\"\n)\n\nconfig := api.NewConfig()\n\nclient := api.NewClient(config)\n\nresponse, err := client.Widgets.ListWidgets(context.Background())\nif err != nil {\n  panic(err)\n}\n\nfmt.Println(response)\n"
+}
