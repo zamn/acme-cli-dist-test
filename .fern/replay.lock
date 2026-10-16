@@ -12,5 +12,85 @@ generations:
     cli_version: unknown
     generator_versions:
       fernapi/fern-cli-generator: 0.49.0
-current_generation: 0f5602aaa19844e0b3084c04af208e6824a9efcb
-patches: []
+  - commit_sha: b55f27b4f3bdfa01f65ac0b5a2e6aecd28364a23
+    tree_hash: a750484155416ef51054acb3cd117ea27701f610
+    timestamp: 2026-10-16T20:10:53.754Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-cli-generator: 0.54.0
+current_generation: b55f27b4f3bdfa01f65ac0b5a2e6aecd28364a23
+patches:
+  - id: patch-5a70afc8
+    content_hash: sha256:9d98b50525601f8f6e68b4e98472a185bc004c77b724bcca1dffd0c9a527c416
+    original_commit: 5a70afc82a4b75ca7d9439b270c8a69bedf6d406
+    original_message: "Customer edit: add replay test marker to config.rs (after lockfile)"
+    original_author: Adam Hamot <adamhamot@gmail.com>
+    base_generation: b55f27b4f3bdfa01f65ac0b5a2e6aecd28364a23
+    files:
+      - acme-beta-sdk/src/config.rs
+    patch_content: |
+      diff --git a/acme-beta-sdk/src/config.rs b/acme-beta-sdk/src/config.rs
+      index 72db09b..5194324 100644
+      --- a/acme-beta-sdk/src/config.rs
+      +++ b/acme-beta-sdk/src/config.rs
+      @@ -47,3 +47,6 @@ impl Default for ClientConfig {
+               }
+           }
+       }
+      +
+      +// Customer-authored addition (replay test marker FSDK-REPLAY-2).
+      +pub const CUSTOMER_REPLAY_MARKER: &str = "replay-test";
+    theirs_snapshot:
+      acme-beta-sdk/src/config.rs: |
+        use crate::Environment;
+        use std::collections::HashMap;
+        use std::time::Duration;
+
+        #[derive(Debug, Clone)]
+        pub struct ClientConfig {
+            pub base_url: String,
+            pub api_key: Option<String>,
+            pub token: Option<String>,
+            pub username: Option<String>,
+            pub password: Option<String>,
+            pub client_id: Option<String>,
+            pub client_secret: Option<String>,
+            pub oauth_token_endpoint: Option<String>,
+            pub oauth_token_exchange: Option<crate::OAuthTokenExchangeConfig>,
+            pub timeout: Duration,
+            pub max_retries: u32,
+            pub custom_headers: HashMap<String, String>,
+            pub user_agent: String,
+            /// Optional custom `reqwest` client, used as-is for every request.
+            /// When set, it owns all transport-level configuration (TLS, proxies, timeout,
+            /// user agent); when `None` the SDK builds its own client from `timeout` and
+            /// `user_agent`.
+            pub reqwest_client: Option<reqwest::Client>,
+        }
+        impl Default for ClientConfig {
+            fn default() -> Self {
+                Self {
+                    base_url: Environment::default().url().to_string(),
+                    api_key: None,
+                    token: None,
+                    username: None,
+                    password: None,
+                    client_id: None,
+                    client_secret: None,
+                    oauth_token_endpoint: None,
+                    oauth_token_exchange: None,
+                    timeout: Duration::from_secs(60),
+                    max_retries: 3,
+                    custom_headers: HashMap::from([
+                        ("X-Fern-Language".to_string(), "Rust".to_string()),
+                        ("X-Fern-SDK-Name".to_string(), "acme_beta_sdk".to_string()),
+                        ("X-Fern-SDK-Version".to_string(), "0.3.0".to_string()),
+                    ]),
+                    user_agent: "Api Rust SDK".to_string(),
+                    reqwest_client: None,
+                }
+            }
+        }
+
+        // Customer-authored addition (replay test marker FSDK-REPLAY-2).
+        pub const CUSTOMER_REPLAY_MARKER: &str = "replay-test";
